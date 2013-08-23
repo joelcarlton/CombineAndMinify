@@ -19,9 +19,10 @@ start = time.time()
 
 # Files
 fileList = 'files.txt'
-jsPath = '../client/public/js/'
-jsMaster = jsPath + 'master.js'
-jsMinify = jsPath + 'minify.js'
+inPath = '../client/public/js/'
+outPath = '../client/private/js/'
+jsMaster = outPath + 'master.js'
+jsMinify = outPath + 'master.min.js'
 
 # Read in order file
 order = open(fileList, 'r')
@@ -30,30 +31,32 @@ order = open(fileList, 'r')
 orderArray = []
 # Get List of files
 for line in order:
-  if not '#' in line:
-    # Remove newlines
-    if '\r' in line: line = line.replace('\r', '')
-    if '\n' in line: line = line.replace('\n', '')
-    # Add to array
-    orderArray.append(line)
+    if not '#' in line:
+        # Remove newlines
+        if '\r' in line:
+            line = line.replace('\r', '')
+        if '\n' in line:
+            line = line.replace('\n', '')
+        # Add to array
+        orderArray.append(line)
 
 # Create Array
 masterArray = []
 # Get contents of files
 for entry in orderArray:
-  file = open(jsPath + entry, 'r')
-  masterArray.append(file.read())
+    file = open(inPath + entry, 'r')
+    masterArray.append(file.read())
 
 # Check for old master then remove
 if os.path.isfile(jsMaster):
-  print 'Trashing Old Master File'
-  os.remove(jsMaster)
+    print 'Trashing Old Master File'
+    os.remove(jsMaster)
 
 # Create new master file
 master = open(jsMaster, 'a')
 # Add contents of files to master
 for i in masterArray:
-  master.write(i)
+    master.write(i)
 
 # Close master and reopen for reading
 master.close()
@@ -63,9 +66,9 @@ master = open(jsMaster, 'r')
 print 'Sending JavaScript for Minification'
 url = 'http://marijnhaverbeke.nl/uglifyjs'
 user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
-values = {'js_code' : master.read()}
-headers = { 'User-Agent' : user_agent }
-data = urllib.urlencode(values) # quote
+values = {'js_code': master.read()}
+headers = {'User-Agent': user_agent}
+data = urllib.urlencode(values)
 req = urllib2.Request(url, data, headers)
 response = urllib2.urlopen(req)
 
